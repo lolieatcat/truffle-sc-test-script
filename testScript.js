@@ -1,0 +1,37 @@
+let accounts = await web3.eth.getAccounts()
+
+let proxy = await Proxy.deployed()
+let testToken = await TestToken.deployed()
+let hydro = await HybridExchange.deployed()
+let wethToken = await WethToken.deployed()
+
+let baseAddress = accounts[0]
+
+let nonce = await web3.eth.getTransactionCount(baseAddress)
+console.log('baseAddress:', baseAddress, " nonce:", nonce)
+console.log('---------------------------------')
+console.log('step 1. Add white list for hydro.')
+let whites = await proxy.getAllAddresses()
+console.log('white list:', whites)
+proxy.addAddress(hydro.address)
+console.log('---------------------------------')
+console.log('step 2. Send some token to accounts.')
+testToken.transfer(accounts[1], "1000000000000000000000")
+testToken.transfer(accounts[2], "1000000000000000000000")
+testToken.transfer(accounts[3], "1000000000000000000000")
+wethToken.transfer(accounts[1], "1000000000000000000000")
+wethToken.transfer(accounts[2], "1000000000000000000000")
+wethToken.transfer(accounts[3], "1000000000000000000000")
+console.log('---------------------------------')
+console.log('step 3. Approve for proxy.')
+testToken.approve(proxy.address, "90000000000000000000000", {from:accounts[1]})
+testToken.approve(proxy.address, "90000000000000000000000", {from:accounts[2]})
+testToken.approve(proxy.address, "90000000000000000000000", {from:accounts[3]})
+testToken.approve(proxy.address, "90000000000000000000000", {from:hydro.address})
+wethToken.approve(proxy.address, "90000000000000000000000", {from:accounts[1]})
+wethToken.approve(proxy.address, "90000000000000000000000", {from:accounts[2]})
+wethToken.approve(proxy.address, "90000000000000000000000", {from:accounts[3]})
+wethToken.approve(proxy.address, "90000000000000000000000", {from:hydro.address})
+console.log('---------------------------------')
+
+
